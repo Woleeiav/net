@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Методические указания по настройки сети</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+        pre, code {
+            font-family: 'Fira Code', monospace;
+        }
+        /* Highlight term on search */
+        .highlight {
+            background-color: #fef08a;
+            color: #854d0e;
+            padding: 0.1rem 0.2rem;
+            border-radius: 0.25rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased bg-slate-50 text-slate-800">
+
+    <!-- Top Header -->
+    <header class="sticky top-0 z-40 w-full border-b border-slate-200 bg-white/95 backdrop-blur">
+        <div class="flex h-16 items-center justify-between px-4 sm:px-8 max-w-7xl mx-auto">
+            <div class="flex items-center gap-3">
+                <button id="mobile-menu-btn" class="lg:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                        <i class="fa-solid fa-network-wired text-sm"></i>
+                    </div>
+                    <span class="font-bold text-slate-900 text-lg tracking-tight">NetDocs</span>
+                    <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">v1.0</span>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="relative w-full max-w-xs sm:max-w-md">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                </div>
+                <input type="text" id="search-input" placeholder="Поиск по командам и параметрам..." 
+                    class="w-full pl-9 pr-8 py-1.5 text-sm bg-slate-100 border border-slate-200 rounded-lg focus:outline-none focus:bg-white focus:border-brand-500 transition-all text-slate-800 placeholder-slate-400">
+                <button id="clear-search" class="hidden absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex-1 max-w-7xl w-full mx-auto flex">
+        <!-- Sidebar Navigation (Fixed/Sticky on Left) -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-64 bg-white border-r border-slate-200 pt-20 pb-6 px-4 transform -translate-x-full lg:translate-x-0 lg:sticky lg:top-16 lg:h-[calc(100vh-4rem)] lg:pt-6 transition-transform duration-200 ease-in-out shrink-0 overflow-y-auto">
+            <nav class="space-y-1 text-sm font-medium">
+                <div class="px-3 pb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">Оглавление</div>
+                
+                <a href="#sec-1" class="sidebar-link flex items-center px-3 py-2 text-slate-600 rounded-lg hover:bg-slate-100 hover:text-slate-900 transition-colors">
+                    <i class="fa-solid fa-table w-5 text-slate-400"></i> 1. Адресация
+                </a>
+                <a href="#sec-2" class="sidebar-link flex items-center px-3 py-2 text-slate-600 rounded-lg hover:bg-slate-100 hover:text-slate-900 transition-colors">
+                    <i class="fa-solid fa-route w-5 text-slate-400"></i> 2. Настройка туннеля
+                </a>
+                <a href="#sec-3" class="sidebar-link flex items-center px-3 py-2 text-slate-600 rounded-lg hover:bg-slate-100 hover:text-slate-900 transition-colors">
+                    <i class="fa-solid fa-diagram-project w-5 text-slate-400"></i> 3. Настройка OSPF
+                </a>
+                <a href="#sec-4" class="sidebar-link flex items-center px-3 py-2 text-slate-600 rounded-lg hover:bg-slate-100 hover:text-slate-900 transition-colors">
+                    <i class="fa-solid fa-arrows-split-up-and-left w-5 text-slate-400"></i> 4. Настройка NAT
+                </a>
+                <a href="#sec-5" class="sidebar-link flex items-center px-3 py-2 text-slate-600 rounded-lg hover:bg-slate-100 hover:text-slate-900 transition-colors">
+                    <i class="fa-solid fa-server w-5 text-slate-400"></i> 5. Настройка DHCP
+                </a>
+                <a href="#sec-6" class="sidebar-link flex items-center px-3 py-2 text-slate-600 rounded-lg hover:bg-slate-100 hover:text-slate-900 transition-colors">
+                    <i class="fa-solid fa-globe w-5 text-slate-400"></i> 6. Настройка DNS
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Sidebar Overlay for Mobile -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-20 hidden lg:hidden"></div>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 p-4 sm:p-8 lg:p-10 max-w-4xl overflow-x-hidden">
+            
+            <!-- Intro Banner -->
+            <div class="mb-8 p-6 bg-white border border-slate-200 rounded-xl shadow-sm">
+                <h1 class="text-2xl font-bold text-slate-900 mb-2">Методические указания по настройки сети</h1>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                    Официальное руководство по конфигурации сетевого оборудования, адресации, маршрутизации и вспомогательных служб. Все команды сохранены строго без изменений.
+                </p>
+            </div>
+
+            <!-- Search Results Counter (Hidden by default) -->
+            <div id="search-info" class="hidden mb-6 p-3 bg-brand-50 border border-brand-100 rounded-lg text-sm text-brand-700 flex justify-between items-center">
+                <span>Найдено совпадений: <strong id="search-count">0</strong></span>
+                <button onclick="resetSearch()" class="text-xs text-brand-600 hover:underline">Сбросить поиск</button>
+            </div>
+
+            <!-- Content Sections -->
+            <div class="space-y-8" id="content-container">
+
+                <!-- Section 1 -->
+                <section id="sec-1" class="doc-section bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                    <div class="flex items-center gap-3 border-b border-slate-100 pb-4 mb-4">
+                        <span class="w-7 h-7 rounded-md bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-sm">1</span>
+                        <h2 class="text-lg font-bold text-slate-900">Таблица адресации</h2>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead>
+                                <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
+                                    <th class="py-3 px-4 text-left">Устройство</th>
+                                    <th class="py-3 px-4 text-left">IP-адрес / Маска</th>
+                                    <th class="py-3 px-4 text-left">Шлюз по умолчанию</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 font-mono text-xs text-slate-700">
+                                <tr class="hover:bg-slate-50/80 transition-colors">
+                                    <td class="py-3 px-4 font-semibold font-sans text-slate-900 align-top text-left">HQ-RTR</td>
+                                    <td class="py-3 px-4 text-left">
+                                        <div class="flex flex-col space-y-1 items-start text-left">
+                                            <span>172.16.1.2/28</span>
+                                            <span>192.168.100.1/27</span>
+                                            <span>192.168.200.1/24</span>
+                                            <span>192.168.99.1/29</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-4 align-top text-left">172.16.1.1</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/80 transition-colors">
+                                    <td class="py-3 px-4 font-semibold font-sans text-slate-900 align-top text-left">BR-RTR</td>
+                                    <td class="py-3 px-4 text-left">
+                                        <div class="flex flex-col space-y-1 items-start text-left">
+                                            <span>172.16.2.2/28</span>
+                                            <span>192.168.0.1/28</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-4 align-top text-left">172.16.2.1</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/80 transition-colors">
+                                    <td class="py-3 px-4 font-semibold font-sans text-slate-900 text-left">HQ-SRV</td>
+                                    <td class="py-3 px-4 text-left">192.168.100.2/27</td>
+                                    <td class="py-3 px-4 text-left">192.168.100.1</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/80 transition-colors">
+                                    <td class="py-3 px-4 font-semibold font-sans text-slate-900 text-left">HQ-CLI</td>
+                                    <td class="py-3 px-4 text-left">192.168.200.2/24</td>
+                                    <td class="py-3 px-4 text-left">192.168.200.1</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/80 transition-colors">
+                                    <td class="py-3 px-4 font-semibold font-sans text-slate-900 text-left">BR-SRV</td>
+                                    <td class="py-3 px-4 text-left">192.168.0.2/28</td>
+                                    <td class="py-3 px-4 text-left">192.168.0.2</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Section 2 -->
+                <section id="sec-2" class="doc-section bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                    <div class="flex items-center gap-3 border-b border-slate-100 pb-4 mb-4">
+                        <span class="w-7 h-7 rounded-md bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-sm">2</span>
+                        <h2 class="text-lg font-bold text-slate-900">Настройка туннеля</h2>
+                    </div>
+                    <div class="relative group">
+                        <button onclick="copyCode(this)" class="copy-btn absolute top-3 right-3 px-3 py-1 bg-white hover:bg-slate-100 text-slate-600 border border-slate-200 rounded-md text-xs font-medium transition-all shadow-sm flex items-center gap-1.5 z-10">
+                            <i class="fa-regular fa-copy"></i>
+                            <span>Копировать</span>
+                        </button>
+                        <pre class="bg-slate-900 text-slate-100 p-4 rounded-lg text-sm leading-relaxed overflow-x-auto"><code>int tunnel.1
+ip addr 10.10.10.1/30
+ip tunnel 172.16.1.2 172.16.2.2 mode gre</code></pre>
+                    </div>
+                </section>
+
+                <!-- Section 3 -->
+                <section id="sec-3" class="doc-section bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                    <div class="flex items-center gap-3 border-b border-slate-100 pb-4 mb-4">
+                        <span class="w-7 h-7 rounded-md bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-sm">3</span>
+                        <h2 class="text-lg font-bold text-slate-900">Настройка OSPF</h2>
+                    </div>
+                    <div class="relative group">
+                        <button onclick="copyCode(this)" class="copy-btn absolute top-3 right-3 px-3 py-1 bg-white hover:bg-slate-100 text-slate-600 border border-slate-200 rounded-md text-xs font-medium transition-all shadow-sm flex items-center gap-1.5 z-10">
+                            <i class="fa-regular fa-copy"></i>
+                            <span>Копировать</span>
+                        </button>
+                        <pre class="bg-slate-900 text-slate-100 p-4 rounded-lg text-sm leading-relaxed overflow-x-auto"><code>router ospf 1
+passive-interface default
+no passive-interface tunnel.1
+network 10.10.10.0/30 area 0
+network 192.168.100.0/27 area 0
+network 192.168.200.0/24 area 0
+network 192.168.99.0/29 area 0
+(network 10.10.10.0/30 area 0)
+(network 192.168.0.0/28 area 0)
+int tunnel.1
+ip ospf authentication message-digest
+ip ospf message-digest-key 1 md5 P@ssw0rd</code></pre>
+                    </div>
+                </section>
+
+                <!-- Section 4 -->
+                <section id="sec-4" class="doc-section bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                    <div class="flex items-center gap-3 border-b border-slate-100 pb-4 mb-4">
+                        <span class="w-7 h-7 rounded-md bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-sm">4</span>
+                        <h2 class="text-lg font-bold text-slate-900">Настройка NAT</h2>
+                    </div>
+                    <div class="relative group">
+                        <button onclick="copyCode(this)" class="copy-btn absolute top-3 right-3 px-3 py-1 bg-white hover:bg-slate-100 text-slate-600 border border-slate-200 rounded-md text-xs font-medium transition-all shadow-sm flex items-center gap-1.5 z-10">
+                            <i class="fa-regular fa-copy"></i>
+                            <span>Копировать</span>
+                        </button>
+                        <pre class="bg-slate-900 text-slate-100 p-4 rounded-lg text-sm leading-relaxed overflow-x-auto"><code>int isp
+ip nat outside
+int 100
+ip nat inside
+int 200
+ip nat inside
+int 999
+ip nat inside
+ip nat pool VLAN100 192.168.100.1-192.168.100.30
+ip nat pool VLAN200 192.168.200.1-192.168.200.254
+ip nat pool VLAN999 192.168.99.1-192.168.99.6
+ip nat source dynamic inside-to-outside pool VLAN100 overload interface isp
+ip nat source dynamic inside-to-outside pool VLAN200 overload interface isp
+ip nat source dynamic inside-to-outside pool VLAN999 overload interface isp</code></pre>
+                    </div>
+                </section>
+
+                <!-- Section 5 -->
+                <section id="sec-5" class="doc-section bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                    <div class="flex items-center gap-3 border-b border-slate-100 pb-4 mb-4">
+                        <span class="w-7 h-7 rounded-md bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-sm">5</span>
+                        <h2 class="text-lg font-bold text-slate-900">Настройка DHCP</h2>
+                    </div>
+                    <div class="relative group">
+                        <button onclick="copyCode(this)" class="copy-btn absolute top-3 right-3 px-3 py-1 bg-white hover:bg-slate-100 text-slate-600 border border-slate-200 rounded-md text-xs font-medium transition-all shadow-sm flex items-center gap-1.5 z-10">
+                            <i class="fa-regular fa-copy"></i>
+                            <span>Копировать</span>
+                        </button>
+                        <pre class="bg-slate-900 text-slate-100 p-4 rounded-lg text-sm leading-relaxed overflow-x-auto"><code>ip pool VLAN200 192.168.200.2-192.168.200.254
+dhcp-server 1
+pool VLAN200 1
+mask 24
+gateway 192.168.200.1
+dns 192.168.100.2
+domain-name au-team.irpo
+int 200
+dhcp-server 1</code></pre>
+                    </div>
+                </section>
+
+                <!-- Section 6 -->
+                <section id="sec-6" class="doc-section bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                    <div class="flex items-center gap-3 border-b border-slate-100 pb-4 mb-4">
+                        <span class="w-7 h-7 rounded-md bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-sm">6</span>
+                        <h2 class="text-lg font-bold text-slate-900">Настройка DNS</h2>
+                    </div>
+                    <div class="relative group">
+                        <button onclick="copyCode(this)" class="copy-btn absolute top-3 right-3 px-3 py-1 bg-white hover:bg-slate-100 text-slate-600 border border-slate-200 rounded-md text-xs font-medium transition-all shadow-sm flex items-center gap-1.5 z-10">
+                            <i class="fa-regular fa-copy"></i>
+                            <span>Копировать</span>
+                        </button>
+                        <pre class="bg-slate-900 text-slate-100 p-4 rounded-lg text-sm leading-relaxed overflow-x-auto"><code>systemctl enable --now dnsmasq
+vim /etc/dnsmasq.conf
+domain=au-team.irpo
+expand-hosts
+listen-address=192.168.100.2,127.0.0.1
+server=77.88.8.7
+address=/hq-rtr.au-team.irpo/172.16.1.2
+address=/br-rtr.au-team.irpo/172.16.2.2
+address=/hq-srv.au-team.irpo/192.168.100.2
+address=/hq-cli.au-team.irpo/192.168.200.2
+address=/br-srv.au-team.irpo/192.168.0.2
+address=/docker.au-team.irpo/172.16.1.1
+address=/web.au-team.irpo/172.16.2.1
+systemctl restart dnsmasq
+vim /etc/resolv.conf
+nameserver 192.168.100.2
+search au-team.irpo
+ip domain-name au-team.irpo
+ip name-server 192.168.100.2</code></pre>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Footer -->
+            <footer class="mt-12 pt-6 border-t border-slate-200 text-center text-xs text-slate-400">
+                <p>Методические указания по настройки сети — Все права защищены</p>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-4 py-2.5 rounded-lg shadow-lg text-sm flex items-center gap-2 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none z-50">
+        <i class="fa-solid fa-check text-emerald-400"></i>
+        <span>Скопировано в буфер обмена!</span>
+    </div>
+
+    <!-- JavaScript Interactions -->
+    <script>
+        // Copy Code Functionality
+        function copyCode(button) {
+            const container = button.parentElement;
+            const codeBlock = container.querySelector('code');
+            const textToCopy = codeBlock.innerText;
+
+            // Fallback for document.execCommand
+            const textarea = document.createElement('textarea');
+            textarea.value = textToCopy;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+                document.execCommand('copy');
+                showToast();
+                
+                // Visual feedback on button
+                const icon = button.querySelector('i');
+                const label = button.querySelector('span');
+                icon.className = 'fa-solid fa-check text-emerald-600';
+                label.innerText = 'Скопировано!';
+                button.classList.add('border-emerald-500', 'bg-emerald-50', 'text-emerald-700');
+
+                setTimeout(() => {
+                    icon.className = 'fa-regular fa-copy';
+                    label.innerText = 'Копировать';
+                    button.classList.remove('border-emerald-500', 'bg-emerald-50', 'text-emerald-700');
+                }, 2000);
+            } catch (err) {
+                console.error('Ошибка при копировании: ', err);
+            } finally {
+                document.body.removeChild(textarea);
+            }
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2500);
+        }
+
+        // Search Functionality
+        const searchInput = document.getElementById('search-input');
+        const clearBtn = document.getElementById('clear-search');
+        const sections = document.querySelectorAll('.doc-section');
+        const searchInfo = document.getElementById('search-info');
+        const searchCount = document.getElementById('search-count');
+
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            
+            if (query.length > 0) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+                resetSearch();
+                return;
+            }
+
+            let matches = 0;
+
+            sections.forEach(section => {
+                const text = section.innerText.toLowerCase();
+                if (text.includes(query)) {
+                    section.style.display = 'block';
+                    matches++;
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+
+            searchInfo.classList.remove('hidden');
+            searchCount.innerText = matches;
+        });
+
+        clearBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            clearBtn.classList.add('hidden');
+            resetSearch();
+        });
+
+        function resetSearch() {
+            searchInput.value = '';
+            clearBtn.classList.add('hidden');
+            searchInfo.classList.add('hidden');
+            sections.forEach(section => {
+                section.style.display = 'block';
+            });
+        }
+
+        // Mobile Sidebar Toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        mobileMenuBtn.addEventListener('click', toggleSidebar);
+        overlay.addEventListener('click', toggleSidebar);
+
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 1024) {
+                    toggleSidebar();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
